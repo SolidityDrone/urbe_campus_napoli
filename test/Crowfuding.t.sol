@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Test, console} from "forge-std/Test.sol";
-import {CrowdfundingPlatform} from "../src/Crowdfunding.sol";
+import {CrowdfundingPlatform} from "../src/CrowdfundingPlatform.sol";
 
 contract TestCrowdfunding is Test {
     CrowdfundingPlatform public crowdfundingPlatform;

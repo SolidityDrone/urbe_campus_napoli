@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Script, console} from "forge-std/Script.sol";
-import {CrowdfundingPlatform} from "../src/Crowdfunding.sol";
+import {CrowdfundingPlatform} from "../src/CrowdfundingPlatform.sol";
 
 contract Deployer is Script {
     CrowdfundingPlatform public crowdfundingPlatform;
