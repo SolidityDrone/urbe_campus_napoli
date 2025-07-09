@@ -2,6 +2,8 @@
 pragma solidity ^0.8.13;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
 
 interface ICrowfundingPlatform {
     error CampaignDosentExist(uint campaignId);
@@ -15,9 +17,11 @@ interface ICrowfundingPlatform {
     event Withdraw(uint indexed campaignId, address indexed funder, uint amount);
 }
 
-contract CrowdfundingPlatform is ICrowfundingPlatform {
+contract CrowdfundingPlatform is ICrowfundingPlatform, ERC721{
     
     uint counter; // that's 0
+    uint nftCounter; 
+    
     IERC20 public usdc;
 
     mapping(uint campaignId => mapping(address funder => uint amount)) public s_amountContributed;
@@ -37,17 +41,18 @@ contract CrowdfundingPlatform is ICrowfundingPlatform {
         uint256 goal;
         uint64 expirationDate;   // block.timestamp
         uint256 amountRaised;
+        uint256 minimunForNft;
         CampaignStatus status;
     }
 
     modifier OnlyCreator(uint campaignId){
-        _;
         require(s_campaigns[campaignId].creator == msg.sender, "Not creator");
+        _;
     }
 
 
     // usdc 0x036CbD53842c5426634e7929541eC2318f3dCF7e
-    constructor(address _usdcAddress){
+    constructor(address _usdcAddress, string memory _name, string memory _symbol) ERC721(_name, _symbol) {
         usdc = IERC20(_usdcAddress);
     } 
 
@@ -60,7 +65,8 @@ contract CrowdfundingPlatform is ICrowfundingPlatform {
         string memory _title, 
         string memory _description, 
         uint _goal, 
-        uint64 _expirationDate
+        uint64 _expirationDate,
+        uint _minimunForNft
     ) public {
         counter++;
         s_campaigns[counter] =  Campaign({
@@ -70,6 +76,7 @@ contract CrowdfundingPlatform is ICrowfundingPlatform {
             goal: _goal,
             expirationDate: _expirationDate,
             amountRaised: 0,
+            minimunForNft: _minimunForNft,
             status: CampaignStatus.Active // 0
         });
 
@@ -77,7 +84,7 @@ contract CrowdfundingPlatform is ICrowfundingPlatform {
     }
 
     // important to give approval to the contract
-    function contribute(uint campaignId, uint amountIn) external {
+    function contribute(uint campaignId, uint amountIn) public {
         Campaign memory campaign = s_campaigns[campaignId];
         if (block.timestamp > campaign.expirationDate) 
             revert CampaignDosentExist(campaignId);
@@ -87,10 +94,14 @@ contract CrowdfundingPlatform is ICrowfundingPlatform {
         s_amountContributed[campaignId][msg.sender] += amountIn;
 
         if (campaign.amountRaised >= campaign.goal){
-            campaign.status == CampaignStatus.Completed;
+            campaign.status = CampaignStatus.Completed;
         }
         s_campaigns[campaignId] = campaign;
         usdc.transferFrom(msg.sender, address(this), amountIn);
+
+        if (amountIn >= campaign.minimunForNft) {
+            _mint(msg.sender, nftCounter);
+        }
 
         emit Contributed(campaignId, msg.sender, amountIn);
     }
@@ -115,7 +126,12 @@ contract CrowdfundingPlatform is ICrowfundingPlatform {
 
     function batchContribute(uint[] memory campaignIds, uint[] memory amounts) external {
         for (uint i; i < campaignIds.length; ++i){
-            contribute(campaignIds[i], amounts[i]);
+            this.contribute(campaignIds[i], amounts[i]);
         }
     }
+
+    function mint(address to, uint tokenId) public  {
+        _mint(to, tokenId);
+    }
+    
 }
