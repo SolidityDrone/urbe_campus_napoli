@@ -141,10 +141,14 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
         return campaigns;
     }
     
-    function getContributions(uint campaignId) external view returns (uint[] memory){
+    function getContributionByUser(uint campaignId, address user) external view returns (uint){
+        return s_amountContributed[campaignId][user];
+    }
+
+    function getContributionsForAllCampaigns(address user) external view returns (uint[] memory){
         uint[] memory contributions = new uint[](counter);
         for (uint i; i < counter; ++i){
-            contributions[i] = s_amountContributed[campaignId][i];
+            contributions[i] = s_amountContributed[i][user];
         }
         return contributions;
     }
@@ -173,7 +177,7 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
         uint expiration, 
         uint goal, 
         uint amountRaised
-    ) internal view returns (bool){
+    ) public view returns (bool){
         return (block.timestamp > expiration && (amountRaised < goal));
     }
 }
