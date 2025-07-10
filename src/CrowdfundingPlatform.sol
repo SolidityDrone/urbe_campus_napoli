@@ -135,5 +135,53 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
         return (block.timestamp > expiration && (amountRaised < goal));
     }
 
+
+    /////////////////////////////////
+    //////GETTERS_FUNCTIONS//////////
+    ////////////////////////////////
+
+    function getCampaign(uint campaignId) external view returns (Campaign memory){
+        return s_campaigns[campaignId];
+    }
+
+    function getCampaigns() external view returns (Campaign[] memory){
+        Campaign[] memory campaigns = new Campaign[](counter);
+        for (uint i; i < counter; ++i){
+            campaigns[i] = s_campaigns[i];
+        }
+        return campaigns;
+    }
     
+    function getContributions(uint campaignId) external view returns (uint[] memory){
+        uint[] memory contributions = new uint[](counter);
+        for (uint i; i < counter; ++i){
+            contributions[i] = s_amountContributed[campaignId][i];
+        }
+        return contributions;
+    }
+
+    function getCampaignInRange(uint start, uint end) external view returns (Campaign[] memory){
+        Campaign[] memory campaigns = new Campaign[](end - start);
+        for (uint i; i < end - start; ++i){
+            campaigns[i] = s_campaigns[start + i];
+        }
+        return campaigns;
+    }
+
+    function getNftCounter() external view returns (uint){
+        return nftCounter;
+    }
+
+    function getNft(uint tokenId) external view returns (uint){
+        return s_nfts[tokenId];
+    }
+
+    function getNftInRange(uint start, uint end) external view returns (uint[] memory){
+        uint[] memory nfts = new uint[](end - start);
+        for (uint i; i < end - start; ++i){
+            nfts[i] = s_nfts[start + i];
+        }
+        return nfts;
+    }
+
 }
