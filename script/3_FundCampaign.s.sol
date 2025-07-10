@@ -4,25 +4,21 @@ pragma solidity ^0.8.13;
 import {Script, console} from "forge-std/Script.sol";
 import {CrowdfundingPlatform} from "../src/CrowdfundingPlatform.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Constants} from "./constants.sol";
 
-contract FundCampaign is Script {
+contract FundCampaign is Script, Constants {
     CrowdfundingPlatform public crowdfundingPlatform;
-    address public usdc = 0x036CbD53842c5426634e7929541eC2318f3dCF7e;
-    address public crowdfundingAddress = 0x31C86930C933E7Ac0f9b84187B7cFE776335F678;
-
-
+    uint public contribution = 1e6;
+    uint public campaignId = 1;
     
     function setUp() public {
-        crowdfundingPlatform = CrowdfundingPlatform(crowdfundingAddress);
+        crowdfundingPlatform = CrowdfundingPlatform(CROWDFUNDING);
     }
     
     function run() public {
         vm.startBroadcast();
-        IERC20(usdc).approve(crowdfundingAddress, 3e6);
-
-        crowdfundingPlatform.contribute(1, 3e6);
-       
-
+        IERC20(USDC).approve(CROWDFUNDING, 3e6);
+        crowdfundingPlatform.contribute(campaignId, contribution);
         vm.stopBroadcast();
     } 
 }

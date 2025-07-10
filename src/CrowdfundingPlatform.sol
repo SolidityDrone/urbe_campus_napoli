@@ -69,7 +69,7 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
         Campaign memory campaign = s_campaigns[campaignId];
         if (s_campaigns[campaignId].status == CampaignStatus.Claimed) revert AlreadyClaimed(campaignId);
         if (_isFailed(campaign.expirationDate, campaign.goal, campaign.amountRaised)) revert CampaignFailed(campaignId);
-
+        if (block.timestamp < campaign.expirationDate) revert CampaignNotExpired(campaignId);
         s_campaigns[campaignId].status = CampaignStatus.Claimed;
         usdc.transfer(msg.sender, campaign.amountRaised);
 
@@ -107,6 +107,7 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
         usdc.transferFrom(msg.sender, address(this), amountIn);
 
         if (amountIn >= campaign.minimunForNft) {
+            nftCounter++;
             _mint(msg.sender, nftCounter);
         }
 
@@ -133,13 +134,15 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
         return s_campaigns[campaignId];
     }
 
-    function getCampaigns() external view returns (Campaign[] memory){
+    function getCampaigns() external view returns (Campaign[] memory) {
         Campaign[] memory campaigns = new Campaign[](counter);
-        for (uint i; i < counter; ++i){
-            campaigns[i] = s_campaigns[i];
+        for (uint i = 0; i < counter; ++i) {
+            campaigns[i] = s_campaigns[i + 1];  // Changed from i to i + 1
         }
         return campaigns;
     }
+
+    
     
     function getContributionByUser(uint campaignId, address user) external view returns (uint){
         return s_amountContributed[campaignId][user];
@@ -163,6 +166,10 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
 
     function getNftCounter() external view returns (uint){
         return nftCounter;
+    }
+
+    function getCampaignCounter() external view returns (uint){
+        return counter;
     }
 
     /////////////////////////////////

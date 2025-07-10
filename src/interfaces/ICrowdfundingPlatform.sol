@@ -10,7 +10,7 @@ interface ICrowdfundingPlatform {
     error AlreadyClaimed(uint campaignId);
     error CampaignFailed(uint campaignId);
     error CampaignWasSuccesful(uint campaignId);
-    
+    error CampaignNotExpired(uint campaignId);
     event CampaignCreated(uint indexed campaignId, address indexed creator, string title, string description, uint goal, uint64 expirationDate);
     event Contributed(uint indexed campaignId, address indexed funder, uint amount);
     event Withdraw(uint indexed campaignId, address indexed funder, uint amount);
