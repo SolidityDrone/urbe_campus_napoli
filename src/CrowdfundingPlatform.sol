@@ -10,7 +10,6 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
     
     uint internal counter; 
     uint internal nftCounter; 
-    
     IERC20 public usdc;
 
     mapping(
@@ -88,7 +87,6 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
         }
     }
 
-
     function contribute(
         uint campaignId, 
         uint amountIn
@@ -127,15 +125,6 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
         }
     }
     
-    function _isFailed(
-        uint expiration, 
-        uint goal, 
-        uint amountRaised
-    ) internal view returns (bool){
-        return (block.timestamp > expiration && (amountRaised < goal));
-    }
-
-
     /////////////////////////////////
     //////GETTERS_FUNCTIONS//////////
     ////////////////////////////////
@@ -176,12 +165,15 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
         return s_nfts[tokenId];
     }
 
-    function getNftInRange(uint start, uint end) external view returns (uint[] memory){
-        uint[] memory nfts = new uint[](end - start);
-        for (uint i; i < end - start; ++i){
-            nfts[i] = s_nfts[start + i];
-        }
-        return nfts;
-    }
+    /////////////////////////////////
+    //////INTERNAL_FUNCTIONS//////////
+    ////////////////////////////////
 
+    function _isFailed(
+        uint expiration, 
+        uint goal, 
+        uint amountRaised
+    ) internal view returns (bool){
+        return (block.timestamp > expiration && (amountRaised < goal));
+    }
 }
