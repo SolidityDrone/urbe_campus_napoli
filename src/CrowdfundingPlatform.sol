@@ -165,10 +165,6 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
         return nftCounter;
     }
 
-    function getNft(uint tokenId) external view returns (uint){
-        return s_nfts[tokenId];
-    }
-
     /////////////////////////////////
     //////INTERNAL_FUNCTIONS//////////
     ////////////////////////////////
