@@ -8,7 +8,7 @@ import {Constants} from "./constants.sol";
 
 contract FundCampaign is Script, Constants {
     CrowdfundingPlatform public crowdfundingPlatform;
-    uint public contribution = 1e6;
+    uint public contribution = 2e5;
     uint public campaignId = 1;
     
     function setUp() public {
@@ -19,6 +19,7 @@ contract FundCampaign is Script, Constants {
         vm.startBroadcast();
         IERC20(USDC).approve(CROWDFUNDING, 3e6);
         crowdfundingPlatform.contribute(campaignId, contribution);
+        
         vm.stopBroadcast();
     } 
 }

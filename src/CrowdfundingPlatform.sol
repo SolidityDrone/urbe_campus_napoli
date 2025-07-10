@@ -151,7 +151,7 @@ contract CrowdfundingPlatform is ICrowdfundingPlatform, ERC721{
     function getContributionsForAllCampaigns(address user) external view returns (uint[] memory){
         uint[] memory contributions = new uint[](counter);
         for (uint i; i < counter; ++i){
-            contributions[i] = s_amountContributed[i][user];
+            contributions[i] = s_amountContributed[i+1][user];
         }
         return contributions;
     }
